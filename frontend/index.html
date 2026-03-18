@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CargoFlow Logistics - Tracking</title>
+<link rel="stylesheet" href="style.css">
+
+<style>
+#map{
+  width:100%;
+  height:400px;
+  margin-top:20px;
+  border-radius:10px;
+}
+</style>
+
+</head>
+<body>
+
+<header>
+  <h1>CargoFlow Logistics</h1>
+  <p>Track your shipment in real time!</p>
+</header>
+
+<main>
+
+<section class="tracking-section">
+
+<input type="text" id="trackingNumber" placeholder="Enter tracking number e.g. TRK-2026-000001">
+
+<button onclick="trackShipment()">Track</button>
+
+<div id="result" class="status-box" style="display:none;"></div>
+
+<!-- GOOGLE MAP -->
+<div id="map"></div>
+
+</section>
+
+</main>
+
+<script>
+
+let map;
+let marker;
+
+/* GOOGLE MAP INITIALIZATION */
+function initMap(){
+
+  map = new google.maps.Map(document.getElementById("map"), {
+    zoom:6,
+    center:{lat:6.5244,lng:3.3792} // Lagos
+  });
+
+}
+
+/* TRACK SHIPMENT */
+
+async function trackShipment(){
+
+  const tn = document.getElementById('trackingNumber').value.trim().toUpperCase();
+
+  const resultDiv = document.getElementById('result');
+
+  try{
+
+    const res = await fetch(`http://localhost:3000/track/${tn}`);
+
+    if(res.ok){
+
+      const data = await res.json();
+
+      let historyHtml='';
+
+      if(data.history.length){
+
+        historyHtml='<h3>Shipment History:</h3><ul>';
+
+        data.history.forEach(h=>{
+
+          historyHtml+=`<li>${h.date}: ${h.status} at ${h.location}</li>`;
+
+        });
+
+        historyHtml+='</ul>';
+
+      }
+
+      resultDiv.innerHTML=`
+
+      <p><strong>Tracking Number:</strong> ${tn}</p>
+
+      <p><strong>Status:</strong> ${data.status}</p>
+
+      <p><strong>Last Location:</strong> ${data.last_location}</p>
+
+      <p><strong>Estimated Delivery:</strong> ${data.estimated_delivery}</p>
+
+      ${historyHtml}
+
+      `;
+
+      /* MAP LOCATION */
+
+      const location = {
+        lat:data.lat,
+        lng:data.lng
+      };
+
+      map.setCenter(location);
+
+      map.setZoom(7);
+
+      if(marker){
+        marker.setMap(null);
+      }
+
+      marker = new google.maps.Marker({
+        position:location,
+        map:map,
+        title:"Shipment Location"
+      });
+
+    }
+
+    else{
+
+      resultDiv.innerHTML=`<p class="error">Tracking number not found.</p>`;
+
+    }
+
+  }
+
+  catch(err){
+
+    resultDiv.innerHTML=`<p class="error">Error connecting to server.</p>`;
+
+  }
+
+  resultDiv.style.display='block';
+
+}
+
+</script>
+
+<!-- GOOGLE MAPS API -->
+
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAUREVtZFRPAdALNFSyrsMd0Wb2ps3FstU&callback=initMap" async defer></script>
+
+</body>
+</html>

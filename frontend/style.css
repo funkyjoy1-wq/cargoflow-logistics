@@ -1,0 +1,164 @@
+/* GENERAL */
+
+body{
+font-family:Arial, sans-serif;
+margin:0;
+padding:0;
+background:#f4f6f8;
+color:#2c3e50;
+}
+
+/* HEADER */
+
+header{
+background:#1abc9c;
+color:white;
+text-align:center;
+padding:40px 20px;
+}
+
+header h1{
+margin:0;
+font-size:2.5em;
+}
+
+header p{
+margin:10px 0 0;
+font-size:1.2em;
+}
+
+/* MAIN LAYOUT */
+
+main{
+display:flex;
+justify-content:center;
+align-items:center;
+flex-direction:column;
+padding:40px 20px;
+}
+
+/* INPUT + BUTTON */
+
+input{
+padding:12px;
+margin:5px;
+font-size:1em;
+border-radius:6px;
+border:1px solid #ccc;
+width:260px;
+}
+
+button{
+padding:12px 20px;
+margin:5px;
+font-size:1em;
+background:#1abc9c;
+color:white;
+border:none;
+border-radius:6px;
+cursor:pointer;
+transition:0.3s;
+}
+
+button:hover{
+background:#16a085;
+}
+
+/* STATUS BOX */
+
+.status-box{
+margin-top:20px;
+background:white;
+padding:20px;
+border-radius:10px;
+box-shadow:0 3px 10px rgba(0,0,0,0.15);
+width:420px;
+max-width:90%;
+text-align:left;
+}
+
+.status-box p{
+margin:8px 0;
+}
+
+.status-box h3{
+margin-top:15px;
+}
+
+.status-box ul{
+padding-left:20px;
+}
+
+.status-box li{
+margin:5px 0;
+}
+
+.error{
+color:red;
+font-weight:bold;
+}
+
+/* GOOGLE MAP */
+
+#map{
+width:100%;
+max-width:700px;
+height:400px;
+margin-top:25px;
+border-radius:10px;
+box-shadow:0 3px 10px rgba(0,0,0,0.2);
+}
+
+/* ADMIN PANEL */
+
+.admin-section{
+background:white;
+padding:30px;
+border-radius:10px;
+box-shadow:0 3px 12px rgba(0,0,0,0.15);
+display:flex;
+flex-direction:column;
+align-items:center;
+width:450px;
+max-width:95%;
+}
+
+.admin-section h2{
+margin-top:20px;
+}
+
+/* FOOTER */
+
+footer{
+text-align:center;
+padding:20px;
+background:#ecf0f1;
+color:#7f8c8d;
+margin-top:40px;
+}
+
+/* MOBILE RESPONSIVE */
+
+@media(max-width:600px){
+
+header h1{
+font-size:1.8em;
+}
+
+input{
+width:90%;
+}
+
+button{
+width:90%;
+}
+
+.status-box{
+width:95%;
+}
+
+#map{
+height:300px;
+}
+
+}
