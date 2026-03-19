@@ -65,7 +65,7 @@ async function trackShipment(){
 
   try{
 
-    const res = await fetch(`http://localhost:3000/track/${tn}`);
+    const res = await fetch(`http://cargo-backend.onrender.com/track/${tn}`);
 
     if(res.ok){
 
