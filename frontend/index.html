@@ -4,39 +4,76 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>CargoFlow Logistics - Tracking</title>
-<link rel="stylesheet" href="style.css">
 
 <style>
-#map{
+body {
+  font-family: Arial, sans-serif;
+  margin:0;
+  padding:0;
+  background:#f4f6f8;
+}
+
+header {
+  background:#1abc9c;
+  color:white;
+  text-align:center;
+  padding:30px 10px;
+}
+
+main {
+  padding:20px;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+}
+
+input, button {
+  padding:12px;
+  margin:5px;
+  font-size:1em;
+}
+
+button {
+  background:#1abc9c;
+  color:white;
+  border:none;
+  border-radius:5px;
+  cursor:pointer;
+}
+
+.status-box {
+  margin-top:20px;
+  background:white;
+  padding:20px;
+  border-radius:8px;
+  width:100%;
+  max-width:400px;
+}
+
+#map {
   width:100%;
   height:400px;
   margin-top:20px;
-  border-radius:10px;
+  border-radius:8px;
 }
 </style>
-
 </head>
+
 <body>
 
 <header>
   <h1>CargoFlow Logistics</h1>
-  <p>Track your shipment in real time!</p>
+  <p>Track your shipment in real time</p>
 </header>
 
 <main>
 
-<section class="tracking-section">
-
-<input type="text" id="trackingNumber" placeholder="Enter tracking number e.g. TRK-2026-000001">
-
+<input type="text" id="trackingNumber" placeholder="Enter tracking number">
 <button onclick="trackShipment()">Track</button>
 
 <div id="result" class="status-box" style="display:none;"></div>
 
-<!-- GOOGLE MAP -->
-<div id="map" style="width:100%; height:400px; margin-top:20px;"></div>>
-
-</section>
+<div id="map"></div>
 
 </main>
 
@@ -45,121 +82,73 @@
 let map;
 let marker;
 
-/* GOOGLE MAP INITIALIZATION */
-function initMap(){
-
+// Initialize Google Map
+function initMap() {
+  const defaultLocation = { lat: 40.4168, lng: -3.7038 }; // Madrid
   map = new google.maps.Map(document.getElementById("map"), {
-    zoom:6,
-    center:{lat:6.5244,lng:3.3792} // Lagos
+    zoom: 5,
+    center: defaultLocation,
   });
 
+  marker = new google.maps.Marker({
+    position: defaultLocation,
+    map: map
+  });
 }
 
-/* TRACK SHIPMENT */
-
-async function trackShipment(){
-
+// Track shipment
+async function trackShipment() {
   const tn = document.getElementById('trackingNumber').value.trim().toUpperCase();
-
   const resultDiv = document.getElementById('result');
 
-  try{
-
-    const res = await fetch('https://cargoflow-logistics-1.onrender.com/track/' + tn);
+  try {
+    const res = await fetch(`https://cargoflow-logistics.onrender.com/track/${tn}`);
 
     if(res.ok){
-
       const data = await res.json();
 
-      let historyHtml='';
-
-      if(data.history.length){
-
-        historyHtml='<h3>Shipment History:</h3><ul>';
-
-        data.history.forEach(h=>{
-
-          historyHtml+=`<li>${h.date}: ${h.status} at ${h.location}</li>`;
-
+      let historyHtml = '';
+      if(data.history && data.history.length){
+        historyHtml = '<h3>History:</h3><ul>';
+        data.history.forEach(h => {
+          historyHtml += `<li>${h.date}: ${h.status} at ${h.location}</li>`;
         });
-
-        historyHtml+='</ul>';
-
+        historyHtml += '</ul>';
       }
 
-      resultDiv.innerHTML=`
-
-      <p><strong>Tracking Number:</strong> ${tn}</p>
-
-      <p><strong>Status:</strong> ${data.status}</p>
-
-      <p><strong>Last Location:</strong> ${data.last_location}</p>
-
-      <p><strong>Estimated Delivery:</strong> ${data.estimated_delivery}</p>
-
-      ${historyHtml}
-
+      resultDiv.innerHTML = `
+        <p><strong>Tracking Number:</strong> ${tn}</p>
+        <p><strong>Status:</strong> ${data.status}</p>
+        <p><strong>Last Location:</strong> ${data.last_location}</p>
+        ${historyHtml}
       `;
 
-      /* MAP LOCATION */
+      // Update map if coordinates exist
+      if(data.lat && data.lng){
+        const location = { lat: data.lat, lng: data.lng };
 
-      const location = {
-        lat:data.lat,
-        lng:data.lng
-      };
+        map.setCenter(location);
+        map.setZoom(6);
 
-      map.setCenter(location);
-
-      map.setZoom(7);
-
-      if(marker){
-        marker.setMap(null);
+        marker.setPosition(location);
       }
 
-      marker = new google.maps.Marker({
-        position:location,
-        map:map,
-        title:"Shipment Location"
-      });
-
+    } else {
+      resultDiv.innerHTML = `<p style="color:red;">Tracking number not found</p>`;
     }
 
-    else{
-
-      resultDiv.innerHTML=`<p class="error">Tracking number not found.</p>`;
-
-    }
-
+  } catch(err){
+    resultDiv.innerHTML = `<p style="color:red;">Error connecting to server</p>`;
   }
 
-  catch(err){
-
-    resultDiv.innerHTML=`<p class="error">Error connecting to server.</p>`;
-
-  }
-
-  resultDiv.style.display='block';
-
+  resultDiv.style.display = 'block';
 }
 
 </script>
-<!-- Your JavaScript -->
-<script>
-  function initMap() {
-    const mapCenter = { lat: 40.4168, lng: -3.7038 }; // Madrid coordinates as default
-    const map = new google.maps.Map(document.getElementById("map"), {
-      zoom: 6,
-      center: mapCenter,
-    });
-  }
 
-  // Example: You can later update the map center with your tracking data
-</script>
-
-<!-- GOOGLE MAPS API -->
-
+<!-- Google Maps API -->
 <script async defer
-  src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAUREVtZFRPAdALNFSyrsMd0Wb2ps3FstU&callback=initMap">
+src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAUREVtZFRPAdALNFSyrsMd0Wb2ps3FstU&callback=initMap">
 </script>
 
 </body>
