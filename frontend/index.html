@@ -65,7 +65,7 @@ async function trackShipment(){
 
   try{
 
-    const res = await fetch(`http://https://cargoflow-logistics.onrender.com/track/${tn}`);
+    const res = await fetch('https://cargoflow-logistics-1.onrender.com/track/' + tn);
 
     if(res.ok){
 

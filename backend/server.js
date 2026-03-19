@@ -4,7 +4,9 @@ const cors = require('cors');
 
 const app = express();
 app.use(bodyParser.json());
-app.use(cors());
+app.use(cors({
+  origin:  'https://your-frontend-url.vercel.app'  // <-- replace with your Vercel frontend URL
+}));
 
 // In-memory shipment database (demo)
 let shipments = [
