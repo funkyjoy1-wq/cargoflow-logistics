@@ -102,7 +102,7 @@ async function trackShipment() {
   const resultDiv = document.getElementById('result');
 
   try {
-    const res = await fetch(`https://cargoflow-logistics.onrender.com/track/${tn}`);
+const res = await fetch('https://cargoflow-logistics-1.onrender.com/track/' + tn);
 
     if(res.ok){
       const data = await res.json();
